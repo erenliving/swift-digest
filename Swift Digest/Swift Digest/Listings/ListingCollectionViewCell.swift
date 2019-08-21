@@ -9,6 +9,8 @@
 import UIKit
 
 class ListingCollectionViewCell: UICollectionViewCell {
+	
+	static let reuseIdentifier = "ListingCollectionViewCell"
 
     override func awakeFromNib() {
         super.awakeFromNib()
