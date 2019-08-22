@@ -9,6 +9,8 @@
 import UIKit
 
 class ArticleViewController: UIViewController {
+	
+	var listing: Listing?
 
     override func viewDidLoad() {
         super.viewDidLoad()

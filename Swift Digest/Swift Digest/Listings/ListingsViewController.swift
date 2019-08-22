@@ -10,11 +10,13 @@ import UIKit
 
 class ListingsViewController: UIViewController {
 	
+	private static let showArticleSegueIdentifier = "showArticle" // This should match the segue identifier in Main.storyboard
 	private static let baseURL = "https://www.reddit.com/r/swift/.json"
 
 	@IBOutlet private var listingsCollectionView: UICollectionView!
 	
 	private var listings = [Listing]()
+	private var selectedListing: Listing?
 	
 	private let sectionInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
 	
@@ -36,6 +38,15 @@ class ListingsViewController: UIViewController {
 		refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
 		refreshControl.addTarget(self, action: #selector(refreshData(_:)), for: .valueChanged)
 		listingsCollectionView.refreshControl = refreshControl
+	}
+	
+	// MARK - Navigation
+	
+	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+		if let articleVC = segue.destination as? ArticleViewController,
+			let selectedListing = selectedListing {
+				articleVC.listing = selectedListing
+		}
 	}
 	
 	// MARK: - Fetching Swift Subreddit JSON
@@ -113,7 +124,13 @@ extension ListingsViewController: UICollectionViewDelegate {
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		// TODO: handle listing selections
+		let listing = listings[indexPath.row]
+		selectedListing = listing
+		
+		// Clear the cell selection immediately, so that nothing is selected when user returns to this screen
+		listingsCollectionView.deselectItem(at: indexPath, animated: false)
+		
+		performSegue(withIdentifier: ListingsViewController.showArticleSegueIdentifier, sender: self)
 	}
 }
 
