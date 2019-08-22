@@ -33,25 +33,24 @@ class ListingsViewController: UIViewController {
 	
 	private func fetchSwiftSubreddit() {
 		guard let url = URL(string: ListingsViewController.baseURL) else {
-			assertionFailure("Could not create URL!")
+			assertionFailure("Could not create listing URL!")
 			return
 		}
 		
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = "GET"
 		
-//		let dataTask = URLSession.shared.dataTask(with: url) { (data, response, error) in
 		let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 			if let error = error {
 				// TODO: handle error
-				print("Request failed! Error: \(error)")
+				print("Listing request failed! Error: \(error)")
 				return
 			}
 			
 			guard let data = data,
 				let response = response else {
 					// TODO: handle error
-					print("Error parsing data and response!")
+					print("Error parsing listing data and response!")
 					return
 			}
 			
@@ -60,14 +59,11 @@ class ListingsViewController: UIViewController {
 			do {
 				let swiftSubreddit = try JSONDecoder().decode(SwiftSubreddit.self, from: data)
 				let listings = swiftSubreddit.data.children
-				for listing in listings {
-					print("\(listing.data.title)")
-				}
 				
 				DispatchQueue.main.async { [weak self] in
 					guard let strongSelf = self else { return }
 					// Clear previously cached data
-					// FIXME: probably want to convert this to an append that has a .contains() check
+					// TODO: probably want to convert this to an append that has a .contains() check
 					strongSelf.listings = []
 					// Cache parsed results and reload the collectionView
 					strongSelf.listings = listings
@@ -93,13 +89,23 @@ extension ListingsViewController: UICollectionViewDelegate {
 
 extension ListingsViewController: UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		// TODO: implement this to handle cells that have images (maintaining image aspect ratio) and titles, or those that just have titles
 		let width = UIScreen.main.bounds.width - sectionInsets.left - sectionInsets.right
 		
 		let listing = listings[indexPath.row]
-		let titleMargins: CGFloat = 16 // 8pt margins on each side of title
-		let titleWidth = width - titleMargins
-		let height = listing.data.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17)], context: nil).height + titleMargins
+		let cellMargins: CGFloat = 16 // 8pt margins on each side of cell content
+		let titleWidth = width - cellMargins
+		let height = listing.data.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17)], context: nil).height + cellMargins
+		
+		/**
+		If the listing has a thumbnail (and associated height) and the title
+		height is < thumbnailHeight, set the height to thumbnailHeight (plus margins)
+		*/
+		if let thumbnailHeight = listing.data.thumbnailHeight {
+			let paddedThumbnailHeight = CGFloat(thumbnailHeight) + cellMargins
+			if height < paddedThumbnailHeight {
+				return CGSize(width: width, height: paddedThumbnailHeight)
+			}
+		}
 		
 		return CGSize(width: width, height: height)
 	}
@@ -123,6 +129,20 @@ extension ListingsViewController: UICollectionViewDataSource {
 		
 		let listing = listings[indexPath.row]
 		cell.titleLabel.text = listing.data.title
+		
+		if let image = listing.data.image {
+			cell.listingImageView.image = image
+		} else if listing.data.hasThumbnail() {
+			// FIXME: store the listing.data.id in a dictionary with the indexPath? Then fetch it below in the closure
+			// TODO: show a spinner over the image
+			listing.data.fetchThumbnail() { [weak self] in
+				guard let strongSelf = self else { return }
+				
+				strongSelf.listingsCollectionView.reloadItems(at: [indexPath])
+			}
+		} else {
+			cell.listingImageView.image = nil
+		}
 		
 		return cell
 	}
