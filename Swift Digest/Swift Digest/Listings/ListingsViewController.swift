@@ -85,6 +85,19 @@ class ListingsViewController: UIViewController {
 }
 
 extension ListingsViewController: UICollectionViewDelegate {
+	func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+		let cell = collectionView.cellForItem(at: indexPath) as! ListingCollectionViewCell
+		cell.dimmingView.backgroundColor = UIColor(white: 0.3, alpha: 0.7)
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+		let cell = collectionView.cellForItem(at: indexPath) as! ListingCollectionViewCell
+		cell.dimmingView.backgroundColor = UIColor(white: 1, alpha: 0.7)
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+		// TODO: handle listing selections
+	}
 }
 
 extension ListingsViewController: UICollectionViewDelegateFlowLayout {

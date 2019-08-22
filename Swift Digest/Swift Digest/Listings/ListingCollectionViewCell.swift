@@ -13,6 +13,7 @@ class ListingCollectionViewCell: UICollectionViewCell {
 	static let reuseIdentifier = "ListingCollectionViewCell"
 
 	@IBOutlet var listingImageView: UIImageView!
+	@IBOutlet var dimmingView: UIView!
 	@IBOutlet var titleLabel: UILabel!
 	
 	override func awakeFromNib() {
