@@ -21,12 +21,21 @@ class ListingsViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
+		setUpCollectionView()
+		
+		fetchSwiftSubreddit()
+	}
+	
+	private func setUpCollectionView() {
 		listingsCollectionView.delegate = self
 		listingsCollectionView.dataSource = self
 		
 		listingsCollectionView.register(UINib(nibName: "\(ListingCollectionViewCell.self)", bundle: nil), forCellWithReuseIdentifier: ListingCollectionViewCell.reuseIdentifier)
 		
-		fetchSwiftSubreddit()
+		let refreshControl = UIRefreshControl()
+		refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+		refreshControl.addTarget(self, action: #selector(refreshData(_:)), for: .valueChanged)
+		listingsCollectionView.refreshControl = refreshControl
 	}
 	
 	// MARK: - Fetching Swift Subreddit JSON
@@ -78,9 +87,16 @@ class ListingsViewController: UIViewController {
 		dataTask.resume()
 	}
 	
+	// MARK: - Refresh Data
+	
+	@objc private func refreshData(_ sender: Any) {
+		fetchSwiftSubreddit()
+	}
+	
 	// MARK: - Refresh UI
 	
 	private func reloadData() {
+		listingsCollectionView.refreshControl?.endRefreshing()
 		listingsCollectionView.reloadData()
 	}
 }
