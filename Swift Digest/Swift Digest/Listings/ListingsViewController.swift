@@ -62,12 +62,15 @@ class ListingsViewController: UIViewController {
 					print("\(listing.data.title) -- \(listing.data.author) -- \(listing.data.selftext)\n")
 				}
 				
-				// Clear previously cached data
-				// FIXME: probably want to convert this to an append that has a .contains() check
-				self.listings = []
-				// Cache parsed results and reload the collectionView
-				self.listings = listings
-				self.reloadData()
+				DispatchQueue.main.async { [weak self] in
+					guard let strongSelf = self else { return }
+					// Clear previously cached data
+					// FIXME: probably want to convert this to an append that has a .contains() check
+					strongSelf.listings = []
+					// Cache parsed results and reload the collectionView
+					strongSelf.listings = listings
+					strongSelf.reloadData()
+				}
 			} catch let decodeError {
 				// TODO: handle error
 				print(decodeError)
@@ -84,9 +87,17 @@ class ListingsViewController: UIViewController {
 }
 
 extension ListingsViewController: UICollectionViewDelegate {
+}
+
+extension ListingsViewController: UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 		// TODO: implement this to handle cells that have images (maintaining image aspect ratio) and titles, or those that just have titles
-		return CGSize.zero
+		let width = UIScreen.main.bounds.width
+		
+		let listing = listings[indexPath.row]
+		let titleWidth = width - 16 // minimum 8pt margin on each side of label
+		let height = listing.data.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17)], context: nil).height
+		return CGSize(width: width, height: height)
 	}
 }
 
@@ -100,8 +111,12 @@ extension ListingsViewController: UICollectionViewDataSource {
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ListingCollectionViewCell.reuseIdentifier, for: indexPath)
+		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ListingCollectionViewCell.reuseIdentifier, for: indexPath) as! ListingCollectionViewCell
+		
 		// TODO: set cell's content
+		let listing = listings[indexPath.row]
+		cell.titleLabel.text = listing.data.title
+		
 		return cell
 	}
 }
