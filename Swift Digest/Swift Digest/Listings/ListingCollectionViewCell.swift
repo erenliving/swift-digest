@@ -9,8 +9,14 @@
 import UIKit
 
 class ListingCollectionViewCell: UICollectionViewCell {
+	
+	static let reuseIdentifier = "ListingCollectionViewCell"
 
-    override func awakeFromNib() {
+	@IBOutlet var listingImageView: UIImageView!
+	@IBOutlet var dimmingView: UIView!
+	@IBOutlet var titleLabel: UILabel!
+	
+	override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
