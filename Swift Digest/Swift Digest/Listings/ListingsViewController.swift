@@ -37,11 +37,11 @@ class ListingsViewController: UIViewController {
 			return
 		}
 		
-//		var urlRequest = URLRequest(url: url)
-//		urlRequest.httpMethod = "GET"
+		var urlRequest = URLRequest(url: url)
+		urlRequest.httpMethod = "GET"
 		
-		let dataTask = URLSession.shared.dataTask(with: url) { (data, response, error) in
-//		let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
+//		let dataTask = URLSession.shared.dataTask(with: url) { (data, response, error) in
+		let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 			if let error = error {
 				// TODO: handle error
 				print("Request failed! Error: \(error)")
@@ -61,7 +61,7 @@ class ListingsViewController: UIViewController {
 				let swiftSubreddit = try JSONDecoder().decode(SwiftSubreddit.self, from: data)
 				let listings = swiftSubreddit.data.children
 				for listing in listings {
-					print("\(listing.data.title) -- \(listing.data.author) -- \(listing.data.selftext)\n")
+					print("\(listing.data.title)")
 				}
 				
 				DispatchQueue.main.async { [weak self] in
