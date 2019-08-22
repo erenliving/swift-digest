@@ -57,8 +57,9 @@ class ListingsViewController: UIViewController {
 			// TODO: check response for 200...299 statusCode
 			
 			do {
-				let swiftSubreddit = try JSONDecoder().decode(SwiftSubreddit.self, from: data)
-				let listings = swiftSubreddit.data.children
+				let swiftSubredditService = try JSONDecoder().decode(SwiftSubredditService.self, from: data)
+				let swiftSubredditPage = SwiftSubredditPage(from: swiftSubredditService)
+				let listings = swiftSubredditPage.listings
 				
 				DispatchQueue.main.async { [weak self] in
 					guard let strongSelf = self else { return }
@@ -107,13 +108,13 @@ extension ListingsViewController: UICollectionViewDelegateFlowLayout {
 		let listing = listings[indexPath.row]
 		let cellMargins: CGFloat = 16 // 8pt margins on each side of cell content
 		let titleWidth = width - cellMargins
-		let height = listing.data.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17)], context: nil).height + cellMargins
+		let height = listing.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17)], context: nil).height + cellMargins
 		
 		/**
 		If the listing has a thumbnail (and associated height) and the title
 		height is < thumbnailHeight, set the height to thumbnailHeight (plus margins)
 		*/
-		if let thumbnailHeight = listing.data.thumbnailHeight {
+		if let thumbnailHeight = listing.thumbnailHeight {
 			let paddedThumbnailHeight = CGFloat(thumbnailHeight) + cellMargins
 			if height < paddedThumbnailHeight {
 				return CGSize(width: width, height: paddedThumbnailHeight)
@@ -141,14 +142,14 @@ extension ListingsViewController: UICollectionViewDataSource {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ListingCollectionViewCell.reuseIdentifier, for: indexPath) as! ListingCollectionViewCell
 		
 		let listing = listings[indexPath.row]
-		cell.titleLabel.text = listing.data.title
+		cell.titleLabel.text = listing.title
 		
-		if let image = listing.data.image {
+		if let image = listing.image {
 			cell.listingImageView.image = image
-		} else if listing.data.hasThumbnail() {
+		} else if listing.hasThumbnail() {
 			// FIXME: store the listing.data.id in a dictionary with the indexPath? Then fetch it below in the closure
 			// TODO: show a spinner over the image
-			listing.data.fetchThumbnail() { [weak self] in
+			listing.fetchThumbnail() { [weak self] in
 				guard let strongSelf = self else { return }
 				
 				strongSelf.listingsCollectionView.reloadItems(at: [indexPath])

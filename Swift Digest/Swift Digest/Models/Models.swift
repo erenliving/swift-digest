@@ -8,25 +8,29 @@
 
 import UIKit
 
-struct SwiftSubreddit: Codable {
-	var data: SwiftSubredditPage
-//	var kind: String
+struct SwiftSubredditService: Codable {
+	var data: SwiftSubredditPageService
+	
+	struct SwiftSubredditPageService: Codable {
+		var after: String
+		var before: String?
+		var children: [ListingService]
+		var dist: Int
+		
+		struct ListingService: Codable {
+			var data: Listing
+		}
+	}
 }
 
 struct SwiftSubredditPage: Codable {
 	var after: String
 	var before: String?
-	var children: [Listing]
-	var dist: Int
-//	var modhash: String
+	var listings: [Listing]
+	var recordCount: Int
 }
 
-struct Listing: Codable {
-	var data: ListingData
-//	var kind: String
-}
-
-class ListingData: Codable {
+class Listing: Codable {
 	
 	enum CodingKeys: String, CodingKey {
 //		case author
@@ -53,11 +57,13 @@ class ListingData: Codable {
 	var thumbnailHeight: Double?
 	var thumbnailWidth: Double?
 	
+	// MARK: Thumbnails
+	
 	func hasThumbnail() -> Bool {
 		if let thumbnail = thumbnail,
 			let thumbnailHeight = thumbnailHeight,
 			let thumbnailWidth = thumbnailWidth {
-				return !thumbnail.isEmpty && thumbnailHeight > 0 && thumbnailWidth > 0
+			return !thumbnail.isEmpty && thumbnailHeight > 0 && thumbnailWidth > 0
 		}
 		
 		return false
@@ -104,5 +110,17 @@ class ListingData: Codable {
 			}
 		}
 		dataTask.resume()
+	}
+}
+
+extension SwiftSubredditPage {
+	init(from service: SwiftSubredditService) {
+		self.after = service.data.after
+		self.before = service.data.before
+		self.recordCount = service.data.dist
+		
+		self.listings = service.data.children.map { (listingService) -> Listing in
+			return listingService.data
+		}
 	}
 }
