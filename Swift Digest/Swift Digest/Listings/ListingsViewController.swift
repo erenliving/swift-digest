@@ -16,7 +16,7 @@ class ListingsViewController: UIViewController {
 	
 	private var listings = [Listing]()
 	
-	private let sectionInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+	private let sectionInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
