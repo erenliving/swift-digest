@@ -16,7 +16,7 @@ class ListingsViewController: UIViewController {
 	@IBOutlet private var listingsCollectionView: UICollectionView!
 	
 	private var listings = [Listing]()
-	private var selectedListing: Listing?
+	private var lastSelectedListing: Listing?
 	
 	private let sectionInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
 	
@@ -27,6 +27,8 @@ class ListingsViewController: UIViewController {
 		
 		fetchSwiftSubreddit()
 	}
+	
+	// MARK: - Set up
 	
 	private func setUpCollectionView() {
 		listingsCollectionView.delegate = self
@@ -44,7 +46,7 @@ class ListingsViewController: UIViewController {
 	
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if let articleVC = segue.destination as? ArticleViewController,
-			let selectedListing = selectedListing {
+			let selectedListing = lastSelectedListing {
 				articleVC.listing = selectedListing
 		}
 	}
@@ -125,7 +127,7 @@ extension ListingsViewController: UICollectionViewDelegate {
 	
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		let listing = listings[indexPath.row]
-		selectedListing = listing
+		lastSelectedListing = listing
 		
 		// Clear the cell selection immediately, so that nothing is selected when user returns to this screen
 		listingsCollectionView.deselectItem(at: indexPath, animated: false)
