@@ -10,9 +10,34 @@ import UIKit
 
 class ArticleViewController: UIViewController {
 	
-	var listing: Listing?
+	@IBOutlet var thumbnailImageView: UIImageView!
+	@IBOutlet var bodyLabel: UILabel!
+	
+	private var _listing: Listing?
+	var listing: Listing {
+		get {
+			guard let listing = _listing else {
+				fatalError("Listing must be set before trying to get!")
+			}
+			
+			return listing
+		}
+		
+		set {
+			_listing = newValue
+		}
+	}
 
     override func viewDidLoad() {
         super.viewDidLoad()
+		
+		navigationItem.title = listing.title
+		
+		if listing.hasThumbnail(),
+			let image = listing.image {
+				thumbnailImageView.image = image
+		}
+		
+		bodyLabel.text = listing.body
     }
 }

@@ -34,11 +34,11 @@ class Listing: Codable {
 	
 	enum CodingKeys: String, CodingKey {
 //		case author
+		case body = "selftext"
 //		case created
 		case createdUTC = "created_utc"
 		case id
 //		case numComments = "num_comments"
-//		case selftext
 		case title
 		case thumbnail
 		case thumbnailHeight = "thumbnail_height"
@@ -46,12 +46,12 @@ class Listing: Codable {
 	}
 	
 //	var author: String
+	var body: String
 //	var created: Double
 	var createdUTC: Double
 	var id: String
 	var image: UIImage?
 //	var numComments: Int
-//	var selftext: String
 	var title: String
 	var thumbnail: String?
 	var thumbnailHeight: Double?
