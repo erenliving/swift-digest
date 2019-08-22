@@ -16,6 +16,8 @@ class ListingsViewController: UIViewController {
 	
 	private var listings = [Listing]()
 	
+	private let sectionInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -92,12 +94,18 @@ extension ListingsViewController: UICollectionViewDelegate {
 extension ListingsViewController: UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 		// TODO: implement this to handle cells that have images (maintaining image aspect ratio) and titles, or those that just have titles
-		let width = UIScreen.main.bounds.width
+		let width = UIScreen.main.bounds.width - sectionInsets.left - sectionInsets.right
 		
 		let listing = listings[indexPath.row]
-		let titleWidth = width - 16 // minimum 8pt margin on each side of label
-		let height = listing.data.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17)], context: nil).height
+		let titleMargins: CGFloat = 16 // 8pt margins on each side of title
+		let titleWidth = width - titleMargins
+		let height = listing.data.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17)], context: nil).height + titleMargins
+		
 		return CGSize(width: width, height: height)
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+		return sectionInsets
 	}
 }
 
@@ -113,7 +121,6 @@ extension ListingsViewController: UICollectionViewDataSource {
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ListingCollectionViewCell.reuseIdentifier, for: indexPath) as! ListingCollectionViewCell
 		
-		// TODO: set cell's content
 		let listing = listings[indexPath.row]
 		cell.titleLabel.text = listing.data.title
 		
