@@ -25,6 +25,18 @@
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="pE8-kr-I08">
                                 <rect key="frame" x="0.0" y="0.0" width="313" height="38"/>
                             </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YvS-tS-0ec" userLabel="Dimming View">
+                                <rect key="frame" x="0.0" y="0.0" width="313" height="38"/>
+                                <color key="backgroundColor" white="1" alpha="0.69689105308219179" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Itm-mP-po4">
+                                <rect key="frame" x="0.0" y="0.0" width="313" height="38"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="5dB-P6-oIG">
+                                    <rect key="frame" x="0.0" y="0.0" width="313" height="38"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                                <blurEffect style="extraLight"/>
+                            </visualEffectView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Article Title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PHx-UY-ibe">
                                 <rect key="frame" x="8" y="8" width="297" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -39,10 +51,23 @@
                             <constraint firstItem="PHx-UY-ibe" firstAttribute="leading" secondItem="D0g-Tm-aS6" secondAttribute="leading" constant="8" id="DQ2-Fc-7uy"/>
                             <constraint firstAttribute="trailing" secondItem="pE8-kr-I08" secondAttribute="trailing" id="GsA-Uf-CXe"/>
                             <constraint firstItem="pE8-kr-I08" firstAttribute="leading" secondItem="D0g-Tm-aS6" secondAttribute="leading" id="JtS-81-cLi"/>
+                            <constraint firstItem="Itm-mP-po4" firstAttribute="height" secondItem="pE8-kr-I08" secondAttribute="height" id="JwJ-9G-Zya"/>
                             <constraint firstAttribute="trailing" secondItem="PHx-UY-ibe" secondAttribute="trailing" constant="8" id="PAO-JE-6cr"/>
+                            <constraint firstItem="YvS-tS-0ec" firstAttribute="top" secondItem="pE8-kr-I08" secondAttribute="top" id="UBb-O9-bf3"/>
                             <constraint firstItem="PHx-UY-ibe" firstAttribute="top" secondItem="D0g-Tm-aS6" secondAttribute="top" constant="8" id="a7C-wR-mLd"/>
                             <constraint firstAttribute="bottom" secondItem="pE8-kr-I08" secondAttribute="bottom" id="huo-Il-NTH"/>
+                            <constraint firstItem="YvS-tS-0ec" firstAttribute="leading" secondItem="pE8-kr-I08" secondAttribute="leading" id="imP-6u-KUl"/>
+                            <constraint firstItem="Itm-mP-po4" firstAttribute="leading" secondItem="pE8-kr-I08" secondAttribute="leading" id="nGw-0q-low"/>
+                            <constraint firstItem="YvS-tS-0ec" firstAttribute="height" secondItem="pE8-kr-I08" secondAttribute="height" id="pDL-2j-vjs"/>
+                            <constraint firstItem="Itm-mP-po4" firstAttribute="width" secondItem="pE8-kr-I08" secondAttribute="width" id="rcI-Nh-mwo"/>
+                            <constraint firstItem="Itm-mP-po4" firstAttribute="top" secondItem="pE8-kr-I08" secondAttribute="top" id="rpQ-iA-UVP"/>
+                            <constraint firstItem="YvS-tS-0ec" firstAttribute="width" secondItem="pE8-kr-I08" secondAttribute="width" id="soJ-zk-0b4"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="Itm-mP-po4"/>
+                            </mask>
+                        </variation>
                     </view>
                 </subviews>
             </view>
