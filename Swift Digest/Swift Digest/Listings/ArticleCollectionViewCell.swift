@@ -8,11 +8,11 @@
 
 import UIKit
 
-class ListingCollectionViewCell: UICollectionViewCell {
+class ArticleCollectionViewCell: UICollectionViewCell {
 	
-	static let reuseIdentifier = "ListingCollectionViewCell"
+	static let reuseIdentifier = "ArticleCollectionViewCell"
 
-	@IBOutlet var listingImageView: UIImageView!
+	@IBOutlet var thumbnailImageView: UIImageView!
 	@IBOutlet var dimmingView: UIView!
 	@IBOutlet var titleLabel: UILabel!
 	

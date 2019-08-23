@@ -8,29 +8,41 @@
 
 import UIKit
 
-struct SwiftSubredditService: Codable {
-	var data: SwiftSubredditPageService
+struct ListingService: Codable {
+	var data: ListingPageService
 	
-	struct SwiftSubredditPageService: Codable {
+	struct ListingPageService: Codable {
 		var after: String
 		var before: String?
-		var children: [ListingService]
+		var children: [ArticleService]
 		var dist: Int
 		
-		struct ListingService: Codable {
-			var data: Listing
+		struct ArticleService: Codable {
+			var data: Article
 		}
 	}
 }
 
-struct SwiftSubredditPage: Codable {
+struct ListingPage: Codable {
 	var after: String
 	var before: String?
-	var listings: [Listing]
+	var articles: [Article]
 	var recordCount: Int
 }
 
-class Listing: Codable {
+extension ListingPage {
+	init(from service: ListingService) {
+		self.after = service.data.after
+		self.before = service.data.before
+		self.recordCount = service.data.dist
+		
+		self.articles = service.data.children.map { (articleService) -> Article in
+			return articleService.data
+		}
+	}
+}
+
+class Article: Codable {
 	
 	enum CodingKeys: String, CodingKey {
 //		case author
@@ -110,17 +122,5 @@ class Listing: Codable {
 			}
 		}
 		dataTask.resume()
-	}
-}
-
-extension SwiftSubredditPage {
-	init(from service: SwiftSubredditService) {
-		self.after = service.data.after
-		self.before = service.data.before
-		self.recordCount = service.data.dist
-		
-		self.listings = service.data.children.map { (listingService) -> Listing in
-			return listingService.data
-		}
 	}
 }

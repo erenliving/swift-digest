@@ -12,7 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ListingCollectionViewCell" customModule="Swift_Digest" customModuleProvider="target">
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ArticleCollectionViewCell" customModule="Swift_Digest" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="313" height="116"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -81,7 +81,7 @@
             <size key="customSize" width="313" height="120"/>
             <connections>
                 <outlet property="dimmingView" destination="YvS-tS-0ec" id="vDJ-nr-0ch"/>
-                <outlet property="listingImageView" destination="pE8-kr-I08" id="no3-PB-ZKw"/>
+                <outlet property="thumbnailImageView" destination="pE8-kr-I08" id="no3-PB-ZKw"/>
                 <outlet property="titleLabel" destination="PHx-UY-ibe" id="N2y-fy-VdH"/>
             </connections>
             <point key="canvasLocation" x="48.550724637681164" y="54.241071428571423"/>

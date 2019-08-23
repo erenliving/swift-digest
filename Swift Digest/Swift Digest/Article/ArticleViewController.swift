@@ -13,31 +13,31 @@ class ArticleViewController: UIViewController {
 	@IBOutlet var thumbnailImageView: UIImageView!
 	@IBOutlet var bodyLabel: UILabel!
 	
-	private var _listing: Listing?
-	var listing: Listing {
+	private var _article: Article?
+	var article: Article {
 		get {
-			guard let listing = _listing else {
-				fatalError("Listing must be set before trying to get!")
+			guard let article = _article else {
+				fatalError("Article must be set before trying to get!")
 			}
 			
-			return listing
+			return article
 		}
 		
 		set {
-			_listing = newValue
+			_article = newValue
 		}
 	}
 
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		navigationItem.title = listing.title
+		navigationItem.title = article.title
 		
-		if listing.hasThumbnail(),
-			let image = listing.image {
+		if article.hasThumbnail(),
+			let image = article.image {
 				thumbnailImageView.image = image
 		}
 		
-		bodyLabel.text = listing.body
+		bodyLabel.text = article.body
     }
 }
