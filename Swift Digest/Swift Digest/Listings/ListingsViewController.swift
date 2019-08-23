@@ -13,124 +13,173 @@ class ListingsViewController: UIViewController {
 	private static let showArticleSegueIdentifier = "showArticle" // This should match the segue identifier in Main.storyboard
 	private static let baseURL = "https://www.reddit.com/r/swift/.json"
 
-	@IBOutlet private var listingsCollectionView: UICollectionView!
+	@IBOutlet private var articlesCollectionView: UICollectionView!
 	
-	private var listings = [Listing]()
-	private var lastSelectedListing: Listing?
+	private var articles = [Article]()
+	private var lastSelectedArticle: Article?
 	
 	private let sectionInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+	
+	deinit {
+		// Clean up any hanging notification observers
+		NotificationCenter.default.removeObserver(self)
+	}
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		setUpCollectionView()
 		
-		fetchSwiftSubreddit()
+		fetchListing()
 	}
 	
 	// MARK: - Set up
 	
 	private func setUpCollectionView() {
-		listingsCollectionView.delegate = self
-		listingsCollectionView.dataSource = self
+		articlesCollectionView.delegate = self
+		articlesCollectionView.dataSource = self
 		
-		listingsCollectionView.register(UINib(nibName: "\(ListingCollectionViewCell.self)", bundle: nil), forCellWithReuseIdentifier: ListingCollectionViewCell.reuseIdentifier)
+		articlesCollectionView.register(UINib(nibName: "\(ArticleCollectionViewCell.self)", bundle: nil), forCellWithReuseIdentifier: ArticleCollectionViewCell.reuseIdentifier)
 		
 		let refreshControl = UIRefreshControl()
-		refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-		refreshControl.addTarget(self, action: #selector(refreshData(_:)), for: .valueChanged)
-		listingsCollectionView.refreshControl = refreshControl
+		refreshControl.attributedTitle = NSAttributedString(string: "Refreshing")
+		refreshControl.addTarget(self, action: #selector(pullToRefresh(_:)), for: .valueChanged)
+		articlesCollectionView.refreshControl = refreshControl
 	}
 	
 	// MARK - Navigation
 	
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if let articleVC = segue.destination as? ArticleViewController,
-			let selectedListing = lastSelectedListing {
-				articleVC.listing = selectedListing
+			let selectedListing = lastSelectedArticle {
+				articleVC.article = selectedListing
 		}
 	}
 	
-	// MARK: - Fetching Swift Subreddit JSON
+	// MARK: - Pull to Refresh
 	
-	private func fetchSwiftSubreddit() {
+	@objc private func pullToRefresh(_ sender: Any) {
+		fetchListing()
+	}
+	
+	// MARK: - Fetching Listing JSON
+	
+	private func fetchListing() {
 		guard let url = URL(string: ListingsViewController.baseURL) else {
 			assertionFailure("Could not create listing URL!")
 			return
 		}
+		
+		articlesCollectionView.refreshControl?.beginRefreshing()
 		
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = "GET"
 		
 		let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 			if let error = error {
-				// TODO: handle error
 				print("Listing request failed! Error: \(error)")
+				
+				DispatchQueue.main.async {
+					self.articlesCollectionView.refreshControl?.endRefreshing()
+					
+					let alert = UIAlertController(title: "Error", message: "Fetching articles failed, please try again.", preferredStyle: .alert)
+					alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+					self.present(alert, animated: true, completion: nil)
+				}
+				
 				return
 			}
 			
 			guard let data = data,
 				let response = response else {
-					// TODO: handle error
 					print("Error parsing listing data and response!")
+					
+					DispatchQueue.main.async {
+						self.articlesCollectionView.refreshControl?.endRefreshing()
+						
+						let alert = UIAlertController(title: "Error", message: "Could not parse response, please try again.", preferredStyle: .alert)
+						alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+						self.present(alert, animated: true, completion: nil)
+					}
+					
 					return
 			}
 			
-			// TODO: check response for 200...299 statusCode
+			if let httpResponse = response as? HTTPURLResponse {
+				let statusCode = httpResponse.statusCode
+					guard 200...299 ~= statusCode else {
+						print("Error non-2xx listing request response statusCode: \(statusCode)")
+						
+						DispatchQueue.main.async {
+							self.articlesCollectionView.refreshControl?.endRefreshing()
+							
+							let alert = UIAlertController(title: "Error", message: "Network request failed with statusCode \(statusCode), please try again.", preferredStyle: .alert)
+							alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+							self.present(alert, animated: true, completion: nil)
+						}
+						
+						return
+					}
+			}
 			
 			do {
-				let swiftSubredditService = try JSONDecoder().decode(SwiftSubredditService.self, from: data)
-				let swiftSubredditPage = SwiftSubredditPage(from: swiftSubredditService)
-				let listings = swiftSubredditPage.listings
+				let listingService = try JSONDecoder().decode(ListingService.self, from: data)
+				let listingPage = ListingPage(from: listingService)
+				let articles = listingPage.articles
 				
 				DispatchQueue.main.async { [weak self] in
 					guard let strongSelf = self else { return }
-					// Clear previously cached data
-					// TODO: probably want to convert this to an append that has a .contains() check
-					strongSelf.listings = []
-					// Cache parsed results and reload the collectionView
-					strongSelf.listings = listings
-					strongSelf.reloadData()
+					
+					strongSelf.updateArticles(articles)
+					strongSelf.articlesCollectionView.refreshControl?.endRefreshing()
+					strongSelf.articlesCollectionView.reloadData()
 				}
 			} catch let decodeError {
-				// TODO: handle error
 				print(decodeError)
+				
+				DispatchQueue.main.async {
+					self.articlesCollectionView.refreshControl?.endRefreshing()
+					
+					let alert = UIAlertController(title: "Error", message: "Could not decode response data, please try again.", preferredStyle: .alert)
+					alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+					self.present(alert, animated: true, completion: nil)
+				}
 			}
 		}
 		dataTask.resume()
 	}
 	
-	// MARK: - Refresh Data
-	
-	@objc private func refreshData(_ sender: Any) {
-		fetchSwiftSubreddit()
-	}
-	
-	// MARK: - Refresh UI
-	
-	private func reloadData() {
-		listingsCollectionView.refreshControl?.endRefreshing()
-		listingsCollectionView.reloadData()
+	private func updateArticles(_ downloadedArticles: [Article]) {
+		for article in downloadedArticles {
+			if !articles.contains(article) {
+				articles.append(article)
+			}
+		}
+		
+		// Sort articles by creationUTC date descending
+		articles.sort { (lhs, rhs) -> Bool in
+			return lhs.createdUTC > rhs.createdUTC
+		}
 	}
 }
 
 extension ListingsViewController: UICollectionViewDelegate {
 	func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
-		let cell = collectionView.cellForItem(at: indexPath) as! ListingCollectionViewCell
+		let cell = collectionView.cellForItem(at: indexPath) as! ArticleCollectionViewCell
 		cell.dimmingView.backgroundColor = UIColor(white: 0.3, alpha: 0.7)
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
-		let cell = collectionView.cellForItem(at: indexPath) as! ListingCollectionViewCell
+		let cell = collectionView.cellForItem(at: indexPath) as! ArticleCollectionViewCell
 		cell.dimmingView.backgroundColor = UIColor(white: 1, alpha: 0.7)
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		let listing = listings[indexPath.row]
-		lastSelectedListing = listing
+		let article = articles[indexPath.row]
+		lastSelectedArticle = article
 		
 		// Clear the cell selection immediately, so that nothing is selected when user returns to this screen
-		listingsCollectionView.deselectItem(at: indexPath, animated: false)
+		articlesCollectionView.deselectItem(at: indexPath, animated: false)
 		
 		performSegue(withIdentifier: ListingsViewController.showArticleSegueIdentifier, sender: self)
 	}
@@ -140,16 +189,17 @@ extension ListingsViewController: UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 		let width = UIScreen.main.bounds.width - sectionInsets.left - sectionInsets.right
 		
-		let listing = listings[indexPath.row]
+		let article = articles[indexPath.row]
 		let cellMargins: CGFloat = 16 // 8pt margins on each side of cell content
 		let titleWidth = width - cellMargins
-		let height = listing.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17)], context: nil).height + cellMargins
+		let titleRect = article.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .regular)], context: nil) // UIFont size and weight  should match ArticleCollectionViewCell.titleLabel font size in its .xib
+		let height = ceil(titleRect.height) + cellMargins
 		
 		/**
-		If the listing has a thumbnail (and associated height) and the title
+		If the article has a thumbnail (and associated height) and the title
 		height is < thumbnailHeight, set the height to thumbnailHeight (plus margins)
 		*/
-		if let thumbnailHeight = listing.thumbnailHeight {
+		if let thumbnailHeight = article.thumbnailHeight {
 			let paddedThumbnailHeight = CGFloat(thumbnailHeight) + cellMargins
 			if height < paddedThumbnailHeight {
 				return CGSize(width: width, height: paddedThumbnailHeight)
@@ -170,29 +220,39 @@ extension ListingsViewController: UICollectionViewDataSource {
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return listings.count
+		return articles.count
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ListingCollectionViewCell.reuseIdentifier, for: indexPath) as! ListingCollectionViewCell
+		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ArticleCollectionViewCell.reuseIdentifier, for: indexPath) as! ArticleCollectionViewCell
 		
-		let listing = listings[indexPath.row]
-		cell.titleLabel.text = listing.title
+		let article = articles[indexPath.row]
 		
-		if let image = listing.image {
-			cell.listingImageView.image = image
-		} else if listing.hasThumbnail() {
-			// FIXME: store the listing.data.id in a dictionary with the indexPath? Then fetch it below in the closure
-			// TODO: show a spinner over the image
-			listing.fetchThumbnail() { [weak self] in
-				guard let strongSelf = self else { return }
-				
-				strongSelf.listingsCollectionView.reloadItems(at: [indexPath])
-			}
-		} else {
-			cell.listingImageView.image = nil
-		}
+		cell.delegate = self
+		cell.setContent(forArticle: article)
 		
 		return cell
+	}
+}
+
+extension ListingsViewController: ArticleCollectionViewCellDelegate {
+	func cellArticleFetchingThumbnail(_ cell: ArticleCollectionViewCell, article: Article) {
+		NotificationCenter.default.addObserver(self, selector: #selector(articleImageDidDownload(_:)), name: Article.ArticleImageDidDownloadNotification, object: article)
+	}
+	
+	@objc private func articleImageDidDownload(_ sender: Notification) {
+		guard let article = sender.object as? Article else {
+			print("Error converting notification's object to Article")
+			return
+		}
+		
+		guard let row = articles.firstIndex(where: { $0.id == article.id }) else {
+			print("Error finding index of article to reload image")
+			return
+		}
+		
+		let indexPath = IndexPath(row: row, section: 0)
+		articlesCollectionView.reloadItems(at: [indexPath])
+		NotificationCenter.default.removeObserver(self, name: Article.ArticleImageDidDownloadNotification, object: article)
 	}
 }

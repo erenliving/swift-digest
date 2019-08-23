@@ -8,29 +8,43 @@
 
 import UIKit
 
-struct SwiftSubredditService: Codable {
-	var data: SwiftSubredditPageService
+struct ListingService: Codable {
+	var data: ListingPageService
 	
-	struct SwiftSubredditPageService: Codable {
+	struct ListingPageService: Codable {
 		var after: String
 		var before: String?
-		var children: [ListingService]
+		var children: [ArticleService]
 		var dist: Int
 		
-		struct ListingService: Codable {
-			var data: Listing
+		struct ArticleService: Codable {
+			var data: Article
 		}
 	}
 }
 
-struct SwiftSubredditPage: Codable {
+struct ListingPage: Codable {
 	var after: String
 	var before: String?
-	var listings: [Listing]
+	var articles: [Article]
 	var recordCount: Int
 }
 
-class Listing: Codable {
+extension ListingPage {
+	init(from service: ListingService) {
+		self.after = service.data.after
+		self.before = service.data.before
+		self.recordCount = service.data.dist
+		
+		self.articles = service.data.children.map { (articleService) -> Article in
+			return articleService.data
+		}
+	}
+}
+
+class Article: Codable, Equatable {
+	
+	static let ArticleImageDidDownloadNotification = Notification.Name(rawValue: "ArticleImageDidDownloadNotification")
 	
 	enum CodingKeys: String, CodingKey {
 //		case author
@@ -69,7 +83,7 @@ class Listing: Codable {
 		return false
 	}
 	
-	func fetchThumbnail(completion: @escaping () -> Void) {
+	func fetchThumbnail() {
 		// Check that the image is nil and there is an actual thumbnail to download
 		guard image == nil,
 			hasThumbnail(),
@@ -85,19 +99,23 @@ class Listing: Codable {
 		
 		let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 			if let error = error {
-				// TODO: handle error
 				print("Thumbnail request failed! URL: \(url), Error: \(error)")
 				return
 			}
 			
 			guard let data = data,
 				let response = response else {
-					// TODO: handle error
 					print("Error parsing thumbnail data and response!")
 					return
 			}
 			
-			// TODO: check response for 200...299 statusCode
+			if let httpResponse = response as? HTTPURLResponse {
+				let statusCode = httpResponse.statusCode
+				guard 200...299 ~= statusCode else {
+					print("Error non-2xx thumbnail request response statusCode: \(statusCode)")
+					return
+				}
+			}
 			
 			guard let image = UIImage(data: data) else {
 				print("Error converting thumbnail data to image!")
@@ -106,21 +124,15 @@ class Listing: Codable {
 			
 			self.image = image
 			DispatchQueue.main.async {
-				completion()
+				NotificationCenter.default.post(name: Article.ArticleImageDidDownloadNotification, object: self, userInfo: nil)
 			}
 		}
 		dataTask.resume()
 	}
-}
-
-extension SwiftSubredditPage {
-	init(from service: SwiftSubredditService) {
-		self.after = service.data.after
-		self.before = service.data.before
-		self.recordCount = service.data.dist
-		
-		self.listings = service.data.children.map { (listingService) -> Listing in
-			return listingService.data
-		}
+	
+	// MARK: - Equatable
+	
+	static func == (lhs: Article, rhs: Article) -> Bool {
+		return lhs.id == rhs.id
 	}
 }

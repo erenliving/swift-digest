@@ -41,7 +41,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Swift News" id="PrO-vq-ZCa"/>
                     <connections>
-                        <outlet property="listingsCollectionView" destination="aBo-yX-GDc" id="6fJ-9G-YVB"/>
+                        <outlet property="articlesCollectionView" destination="aBo-yX-GDc" id="6fJ-9G-YVB"/>
                         <segue destination="4eL-xV-blv" kind="show" identifier="showArticle" id="JXE-fX-HGg"/>
                     </connections>
                 </viewController>
@@ -61,16 +61,35 @@
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s8d-fU-4AN" userLabel="Content View">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="178.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="218.5"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="eOG-XN-NgA">
-                                                <rect key="frame" x="8" y="0.0" width="398" height="178.5"/>
+                                                <rect key="frame" x="8" y="0.0" width="398" height="218.5"/>
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="252" placeholderIntrinsicWidth="414" placeholderIntrinsicHeight="150" translatesAutoresizingMaskIntoConstraints="NO" id="6iO-Nt-Xzo">
-                                                        <rect key="frame" x="0.0" y="0.0" width="398" height="150"/>
-                                                    </imageView>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QOl-UQ-LCY">
+                                                        <rect key="frame" x="0.0" y="0.0" width="398" height="190"/>
+                                                        <subviews>
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="252" placeholderIntrinsicWidth="414" placeholderIntrinsicHeight="150" translatesAutoresizingMaskIntoConstraints="NO" id="6iO-Nt-Xzo">
+                                                                <rect key="frame" x="0.0" y="0.0" width="398" height="190"/>
+                                                            </imageView>
+                                                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="JVv-oc-U6F">
+                                                                <rect key="frame" x="189" y="85" width="20" height="20"/>
+                                                            </activityIndicatorView>
+                                                        </subviews>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="JVv-oc-U6F" secondAttribute="bottom" constant="8" id="FTT-Y7-vBl"/>
+                                                            <constraint firstItem="6iO-Nt-Xzo" firstAttribute="top" secondItem="QOl-UQ-LCY" secondAttribute="top" id="MJO-Jc-ylU"/>
+                                                            <constraint firstItem="6iO-Nt-Xzo" firstAttribute="leading" secondItem="QOl-UQ-LCY" secondAttribute="leading" id="ONo-dd-uio"/>
+                                                            <constraint firstItem="JVv-oc-U6F" firstAttribute="centerX" secondItem="QOl-UQ-LCY" secondAttribute="centerX" id="Ogd-P0-flH"/>
+                                                            <constraint firstAttribute="trailing" secondItem="6iO-Nt-Xzo" secondAttribute="trailing" id="RlO-Rs-otC"/>
+                                                            <constraint firstAttribute="bottom" secondItem="6iO-Nt-Xzo" secondAttribute="bottom" id="bUQ-Yx-670"/>
+                                                            <constraint firstItem="JVv-oc-U6F" firstAttribute="centerY" secondItem="QOl-UQ-LCY" secondAttribute="centerY" id="ju1-bB-8cf"/>
+                                                            <constraint firstItem="JVv-oc-U6F" firstAttribute="top" relation="greaterThanOrEqual" secondItem="QOl-UQ-LCY" secondAttribute="top" constant="8" id="zbn-NU-DkI"/>
+                                                        </constraints>
+                                                    </view>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="17R-qZ-nQD">
-                                                        <rect key="frame" x="0.0" y="158" width="398" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="198" width="398" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -107,6 +126,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="8nr-hQ-ELV"/>
                     <connections>
+                        <outlet property="activityIndicator" destination="JVv-oc-U6F" id="7kC-Sq-oNX"/>
                         <outlet property="bodyLabel" destination="17R-qZ-nQD" id="b6C-NM-uN2"/>
                         <outlet property="thumbnailImageView" destination="6iO-Nt-Xzo" id="x7x-sN-VOG"/>
                     </connections>

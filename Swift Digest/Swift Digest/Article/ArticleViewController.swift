@@ -11,33 +11,59 @@ import UIKit
 class ArticleViewController: UIViewController {
 	
 	@IBOutlet var thumbnailImageView: UIImageView!
+	@IBOutlet var activityIndicator: UIActivityIndicatorView!
 	@IBOutlet var bodyLabel: UILabel!
 	
-	private var _listing: Listing?
-	var listing: Listing {
+	private var _article: Article?
+	var article: Article {
 		get {
-			guard let listing = _listing else {
-				fatalError("Listing must be set before trying to get!")
+			guard let article = _article else {
+				fatalError("Article must be set before trying to get!")
 			}
 			
-			return listing
+			return article
 		}
 		
 		set {
-			_listing = newValue
+			_article = newValue
 		}
 	}
 
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		navigationItem.title = listing.title
+		setUpContent()
+    }
+	
+	private func setUpContent() {
+		navigationItem.title = article.title
 		
-		if listing.hasThumbnail(),
-			let image = listing.image {
+		if article.hasThumbnail() {
+			if let image = article.image {
 				thumbnailImageView.image = image
+			} else {
+				activityIndicator.startAnimating()
+				
+				// Add observer to refresh the imageView when image downloads
+				NotificationCenter.default.addObserver(self, selector: #selector(articleImageDidDownload(_:)), name: Article.ArticleImageDidDownloadNotification, object: article)
+			}
 		}
 		
-		bodyLabel.text = listing.body
-    }
+		bodyLabel.text = article.body
+	}
+	
+	@objc private func articleImageDidDownload(_ sender: Notification) {
+		guard let article = sender.object as? Article else {
+			print("Error converting notification's object to Article")
+			return
+		}
+		
+		guard let image = article.image else {
+			print( "Error getting image from article")
+			return
+		}
+		
+		activityIndicator.stopAnimating()
+		thumbnailImageView.image = image
+	}
 }

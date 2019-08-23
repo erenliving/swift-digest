@@ -13,8 +13,8 @@
 		B00ADA90230CD03B00373060 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B00ADA8F230CD03B00373060 /* Assets.xcassets */; };
 		B00ADA93230CD03B00373060 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B00ADA91230CD03B00373060 /* LaunchScreen.storyboard */; };
 		B00ADA9E230CDEA100373060 /* ArticleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00ADA9D230CDEA100373060 /* ArticleViewController.swift */; };
-		B00ADAA1230CDF8600373060 /* ListingCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00ADA9F230CDF8600373060 /* ListingCollectionViewCell.swift */; };
-		B00ADAA2230CDF8600373060 /* ListingCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B00ADAA0230CDF8600373060 /* ListingCollectionViewCell.xib */; };
+		B00ADAA1230CDF8600373060 /* ArticleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00ADA9F230CDF8600373060 /* ArticleCollectionViewCell.swift */; };
+		B00ADAA2230CDF8600373060 /* ArticleCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B00ADAA0230CDF8600373060 /* ArticleCollectionViewCell.xib */; };
 		B00ADAA5230CEC2A00373060 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00ADAA4230CEC2A00373060 /* Models.swift */; };
 /* End PBXBuildFile section */
 
@@ -27,8 +27,8 @@
 		B00ADA92230CD03B00373060 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B00ADA94230CD03B00373060 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B00ADA9D230CDEA100373060 /* ArticleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleViewController.swift; sourceTree = "<group>"; };
-		B00ADA9F230CDF8600373060 /* ListingCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingCollectionViewCell.swift; sourceTree = "<group>"; };
-		B00ADAA0230CDF8600373060 /* ListingCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ListingCollectionViewCell.xib; sourceTree = "<group>"; };
+		B00ADA9F230CDF8600373060 /* ArticleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleCollectionViewCell.swift; sourceTree = "<group>"; };
+		B00ADAA0230CDF8600373060 /* ArticleCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArticleCollectionViewCell.xib; sourceTree = "<group>"; };
 		B00ADAA4230CEC2A00373060 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,9 +77,9 @@
 		B00ADA9B230CDBC100373060 /* Listings */ = {
 			isa = PBXGroup;
 			children = (
+				B00ADA9F230CDF8600373060 /* ArticleCollectionViewCell.swift */,
+				B00ADAA0230CDF8600373060 /* ArticleCollectionViewCell.xib */,
 				B00ADA8A230CD03B00373060 /* ListingsViewController.swift */,
-				B00ADA9F230CDF8600373060 /* ListingCollectionViewCell.swift */,
-				B00ADAA0230CDF8600373060 /* ListingCollectionViewCell.xib */,
 			);
 			path = Listings;
 			sourceTree = "<group>";
@@ -161,7 +161,7 @@
 				B00ADA93230CD03B00373060 /* LaunchScreen.storyboard in Resources */,
 				B00ADA90230CD03B00373060 /* Assets.xcassets in Resources */,
 				B00ADA8E230CD03B00373060 /* Main.storyboard in Resources */,
-				B00ADAA2230CDF8600373060 /* ListingCollectionViewCell.xib in Resources */,
+				B00ADAA2230CDF8600373060 /* ArticleCollectionViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,7 +176,7 @@
 				B00ADA9E230CDEA100373060 /* ArticleViewController.swift in Sources */,
 				B00ADA89230CD03B00373060 /* AppDelegate.swift in Sources */,
 				B00ADAA5230CEC2A00373060 /* Models.swift in Sources */,
-				B00ADAA1230CDF8600373060 /* ListingCollectionViewCell.swift in Sources */,
+				B00ADAA1230CDF8600373060 /* ArticleCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
