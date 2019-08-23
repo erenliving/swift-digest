@@ -187,16 +187,17 @@ extension ListingsViewController: UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 		let width = UIScreen.main.bounds.width - sectionInsets.left - sectionInsets.right
 		
-		let listing = articles[indexPath.row]
+		let article = articles[indexPath.row]
 		let cellMargins: CGFloat = 16 // 8pt margins on each side of cell content
 		let titleWidth = width - cellMargins
-		let height = listing.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17)], context: nil).height + cellMargins // UIFont size here should match ListingCollectionViewCell.titleLabel font size in its .xib
+		let titleRect = article.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .regular)], context: nil) // UIFont size and weight  should match ArticleCollectionViewCell.titleLabel font size in its .xib
+		let height = ceil(titleRect.height) + cellMargins
 		
 		/**
 		If the article has a thumbnail (and associated height) and the title
 		height is < thumbnailHeight, set the height to thumbnailHeight (plus margins)
 		*/
-		if let thumbnailHeight = listing.thumbnailHeight {
+		if let thumbnailHeight = article.thumbnailHeight {
 			let paddedThumbnailHeight = CGFloat(thumbnailHeight) + cellMargins
 			if height < paddedThumbnailHeight {
 				return CGSize(width: width, height: paddedThumbnailHeight)
