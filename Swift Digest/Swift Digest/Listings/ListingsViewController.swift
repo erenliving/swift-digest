@@ -127,11 +127,8 @@ class ListingsViewController: UIViewController {
 				
 				DispatchQueue.main.async { [weak self] in
 					guard let strongSelf = self else { return }
-					// Clear previously cached data
-					// TODO: probably want to convert this to an append that has a .contains() check
-					strongSelf.articles = []
-					// Cache parsed results and reload the collectionView
-					strongSelf.articles = articles
+					
+					strongSelf.updateArticles(articles)
 					strongSelf.articlesCollectionView.refreshControl?.endRefreshing()
 					strongSelf.articlesCollectionView.reloadData()
 				}
@@ -148,6 +145,19 @@ class ListingsViewController: UIViewController {
 			}
 		}
 		dataTask.resume()
+	}
+	
+	private func updateArticles(_ downloadedArticles: [Article]) {
+		for article in downloadedArticles {
+			if !articles.contains(article) {
+				articles.append(article)
+			}
+		}
+		
+		// Sort articles by creationUTC date descending
+		articles.sort { (lhs, rhs) -> Bool in
+			return lhs.createdUTC > rhs.createdUTC
+		}
 	}
 }
 
