@@ -20,6 +20,11 @@ class ListingsViewController: UIViewController {
 	
 	private let sectionInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
 	
+	deinit {
+		// Clean up any hanging notification observers
+		NotificationCenter.default.removeObserver(self)
+	}
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -57,7 +62,7 @@ class ListingsViewController: UIViewController {
 		fetchListing()
 	}
 	
-	// MARK: - Fetching Swift Subreddit JSON
+	// MARK: - Fetching Listing JSON
 	
 	private func fetchListing() {
 		guard let url = URL(string: ListingsViewController.baseURL) else {
@@ -98,7 +103,22 @@ class ListingsViewController: UIViewController {
 					return
 			}
 			
-			// TODO: check response for 200...299 statusCode
+			if let httpResponse = response as? HTTPURLResponse {
+				let statusCode = httpResponse.statusCode
+					guard 200...299 ~= statusCode else {
+						print("Error non-2xx listing request response statusCode: \(statusCode)")
+						
+						DispatchQueue.main.async {
+							self.articlesCollectionView.refreshControl?.endRefreshing()
+							
+							let alert = UIAlertController(title: "Error", message: "Network request failed with statusCode \(statusCode), please try again.", preferredStyle: .alert)
+							alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+							self.present(alert, animated: true, completion: nil)
+						}
+						
+						return
+					}
+			}
 			
 			do {
 				let listingService = try JSONDecoder().decode(ListingService.self, from: data)
@@ -143,8 +163,8 @@ extension ListingsViewController: UICollectionViewDelegate {
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		let listing = articles[indexPath.row]
-		lastSelectedArticle = listing
+		let article = articles[indexPath.row]
+		lastSelectedArticle = article
 		
 		// Clear the cell selection immediately, so that nothing is selected when user returns to this screen
 		articlesCollectionView.deselectItem(at: indexPath, animated: false)
@@ -193,22 +213,33 @@ extension ListingsViewController: UICollectionViewDataSource {
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ArticleCollectionViewCell.reuseIdentifier, for: indexPath) as! ArticleCollectionViewCell
 		
-		let listing = articles[indexPath.row]
-		cell.titleLabel.text = listing.title
+		let article = articles[indexPath.row]
 		
-		if let image = listing.image {
-			cell.thumbnailImageView.image = image
-		} else if listing.hasThumbnail() {
-			// TODO: show a spinner over the image
-			listing.fetchThumbnail() { [weak self] in
-				guard let strongSelf = self else { return }
-				
-				strongSelf.articlesCollectionView.reloadItems(at: [indexPath])
-			}
-		} else {
-			cell.thumbnailImageView.image = nil
-		}
+		cell.delegate = self
+		cell.setContent(forArticle: article)
 		
 		return cell
+	}
+}
+
+extension ListingsViewController: ArticleCollectionViewCellDelegate {
+	func cellArticleFetchingThumbnail(_ cell: ArticleCollectionViewCell, article: Article) {
+		NotificationCenter.default.addObserver(self, selector: #selector(articleImageDidDownload(_:)), name: Article.ArticleImageDidDownloadNotification, object: article)
+	}
+	
+	@objc private func articleImageDidDownload(_ sender: Notification) {
+		guard let article = sender.object as? Article else {
+			print("Error converting notification's object to Article")
+			return
+		}
+		
+		guard let row = articles.firstIndex(where: { $0.id == article.id }) else {
+			print("Error finding index of article to reload image")
+			return
+		}
+		
+		let indexPath = IndexPath(row: row, section: 0)
+		articlesCollectionView.reloadItems(at: [indexPath])
+		NotificationCenter.default.removeObserver(self, name: Article.ArticleImageDidDownloadNotification, object: article)
 	}
 }

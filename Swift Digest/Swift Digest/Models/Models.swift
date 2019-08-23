@@ -44,6 +44,8 @@ extension ListingPage {
 
 class Article: Codable {
 	
+	static let ArticleImageDidDownloadNotification = Notification.Name(rawValue: "ArticleImageDidDownloadNotification")
+	
 	enum CodingKeys: String, CodingKey {
 //		case author
 		case body = "selftext"
@@ -81,7 +83,7 @@ class Article: Codable {
 		return false
 	}
 	
-	func fetchThumbnail(completion: @escaping () -> Void) {
+	func fetchThumbnail() {
 		// Check that the image is nil and there is an actual thumbnail to download
 		guard image == nil,
 			hasThumbnail(),
@@ -97,19 +99,23 @@ class Article: Codable {
 		
 		let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 			if let error = error {
-				// TODO: handle error
 				print("Thumbnail request failed! URL: \(url), Error: \(error)")
 				return
 			}
 			
 			guard let data = data,
 				let response = response else {
-					// TODO: handle error
 					print("Error parsing thumbnail data and response!")
 					return
 			}
 			
-			// TODO: check response for 200...299 statusCode
+			if let httpResponse = response as? HTTPURLResponse {
+				let statusCode = httpResponse.statusCode
+				guard 200...299 ~= statusCode else {
+					print("Error non-2xx thumbnail request response statusCode: \(statusCode)")
+					return
+				}
+			}
 			
 			guard let image = UIImage(data: data) else {
 				print("Error converting thumbnail data to image!")
@@ -118,7 +124,7 @@ class Article: Codable {
 			
 			self.image = image
 			DispatchQueue.main.async {
-				completion()
+				NotificationCenter.default.post(name: Article.ArticleImageDidDownloadNotification, object: self, userInfo: nil)
 			}
 		}
 		dataTask.resume()
