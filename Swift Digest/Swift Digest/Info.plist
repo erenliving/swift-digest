@@ -24,11 +24,6 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>reddit.com</key>
-			<dict>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
 			<key>redditmedia.com</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>
