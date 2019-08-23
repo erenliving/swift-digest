@@ -28,6 +28,11 @@ class ArticleViewController: UIViewController {
 			_article = newValue
 		}
 	}
+	
+	deinit {
+		// Clean up any hanging notification observers
+		NotificationCenter.default.removeObserver(self)
+	}
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,11 +64,12 @@ class ArticleViewController: UIViewController {
 		}
 		
 		guard let image = article.image else {
-			print( "Error getting image from article")
+			print("Error getting image from article")
 			return
 		}
 		
 		activityIndicator.stopAnimating()
 		thumbnailImageView.image = image
+		NotificationCenter.default.removeObserver(self, name: Article.ArticleImageDidDownloadNotification, object: article)
 	}
 }

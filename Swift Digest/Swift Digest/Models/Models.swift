@@ -47,25 +47,19 @@ class Article: Codable, Equatable {
 	static let ArticleImageDidDownloadNotification = Notification.Name(rawValue: "ArticleImageDidDownloadNotification")
 	
 	enum CodingKeys: String, CodingKey {
-//		case author
 		case body = "selftext"
-//		case created
 		case createdUTC = "created_utc"
 		case id
-//		case numComments = "num_comments"
 		case title
 		case thumbnail
 		case thumbnailHeight = "thumbnail_height"
 		case thumbnailWidth = "thumbnail_width"
 	}
 	
-//	var author: String
 	var body: String
-//	var created: Double
 	var createdUTC: Double
 	var id: String
 	var image: UIImage?
-//	var numComments: Int
 	var title: String
 	var thumbnail: String?
 	var thumbnailHeight: Double?
@@ -77,7 +71,7 @@ class Article: Codable, Equatable {
 		if let thumbnail = thumbnail,
 			let thumbnailHeight = thumbnailHeight,
 			let thumbnailWidth = thumbnailWidth {
-			return !thumbnail.isEmpty && thumbnailHeight > 0 && thumbnailWidth > 0
+				return !thumbnail.isEmpty && thumbnailHeight > 0 && thumbnailWidth > 0
 		}
 		
 		return false
@@ -111,10 +105,10 @@ class Article: Codable, Equatable {
 			
 			if let httpResponse = response as? HTTPURLResponse {
 				let statusCode = httpResponse.statusCode
-				guard 200...299 ~= statusCode else {
-					print("Error non-2xx thumbnail request response statusCode: \(statusCode)")
-					return
-				}
+					guard 200...299 ~= statusCode else {
+						print("Error non-2xx thumbnail request response statusCode: \(statusCode)")
+						return
+					}
 			}
 			
 			guard let image = UIImage(data: data) else {

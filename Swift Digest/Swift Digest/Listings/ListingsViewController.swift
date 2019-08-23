@@ -163,6 +163,8 @@ class ListingsViewController: UIViewController {
 	}
 }
 
+// MARK: - UICollectionViewDelegate
+
 extension ListingsViewController: UICollectionViewDelegate {
 	func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
 		let cell = collectionView.cellForItem(at: indexPath) as! ArticleCollectionViewCell
@@ -185,6 +187,8 @@ extension ListingsViewController: UICollectionViewDelegate {
 	}
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
+
 extension ListingsViewController: UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 		let width = UIScreen.main.bounds.width - sectionInsets.left - sectionInsets.right
@@ -192,7 +196,7 @@ extension ListingsViewController: UICollectionViewDelegateFlowLayout {
 		let article = articles[indexPath.row]
 		let cellMargins: CGFloat = 16 // 8pt margins on each side of cell content
 		let titleWidth = width - cellMargins
-		let titleRect = article.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .regular)], context: nil) // UIFont size and weight  should match ArticleCollectionViewCell.titleLabel font size in its .xib
+		let titleRect = article.title.boundingRect(with: CGSize(width: titleWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .regular)], context: nil) // UIFont size and weight should match ArticleCollectionViewCell.titleLabel font size in its .xib
 		let height = ceil(titleRect.height) + cellMargins
 		
 		/**
@@ -214,6 +218,8 @@ extension ListingsViewController: UICollectionViewDelegateFlowLayout {
 	}
 }
 
+// MARK: - UICollectionViewDataSource
+
 extension ListingsViewController: UICollectionViewDataSource {
 	func numberOfSections(in collectionView: UICollectionView) -> Int {
 		return 1
@@ -234,6 +240,8 @@ extension ListingsViewController: UICollectionViewDataSource {
 		return cell
 	}
 }
+
+// MARK: - ArticleCollectionViewCellDelegate
 
 extension ListingsViewController: ArticleCollectionViewCellDelegate {
 	func cellArticleFetchingThumbnail(_ cell: ArticleCollectionViewCell, article: Article) {
