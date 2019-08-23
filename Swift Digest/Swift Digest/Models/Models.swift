@@ -42,7 +42,7 @@ extension ListingPage {
 	}
 }
 
-class Article: Codable {
+class Article: Codable, Equatable {
 	
 	static let ArticleImageDidDownloadNotification = Notification.Name(rawValue: "ArticleImageDidDownloadNotification")
 	
@@ -128,5 +128,11 @@ class Article: Codable {
 			}
 		}
 		dataTask.resume()
+	}
+	
+	// MARK: - Equatable
+	
+	static func == (lhs: Article, rhs: Article) -> Bool {
+		return lhs.id == rhs.id
 	}
 }
