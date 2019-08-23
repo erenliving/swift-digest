@@ -37,6 +37,9 @@
                                 </view>
                                 <blurEffect style="extraLight"/>
                             </visualEffectView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="MeG-OC-cdH">
+                                <rect key="frame" x="146.5" y="9" width="20" height="20"/>
+                            </activityIndicatorView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Article Title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PHx-UY-ibe">
                                 <rect key="frame" x="8" y="8" width="297" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -46,6 +49,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="MeG-OC-cdH" firstAttribute="centerX" secondItem="pE8-kr-I08" secondAttribute="centerX" id="7xs-4G-YEC"/>
                             <constraint firstAttribute="bottom" secondItem="PHx-UY-ibe" secondAttribute="bottom" constant="8" id="CBa-qq-JBq"/>
                             <constraint firstItem="pE8-kr-I08" firstAttribute="top" secondItem="D0g-Tm-aS6" secondAttribute="top" id="CEX-kC-pZ2"/>
                             <constraint firstItem="PHx-UY-ibe" firstAttribute="leading" secondItem="D0g-Tm-aS6" secondAttribute="leading" constant="8" id="DQ2-Fc-7uy"/>
@@ -55,6 +59,7 @@
                             <constraint firstAttribute="trailing" secondItem="PHx-UY-ibe" secondAttribute="trailing" constant="8" id="PAO-JE-6cr"/>
                             <constraint firstItem="YvS-tS-0ec" firstAttribute="top" secondItem="pE8-kr-I08" secondAttribute="top" id="UBb-O9-bf3"/>
                             <constraint firstItem="PHx-UY-ibe" firstAttribute="top" secondItem="D0g-Tm-aS6" secondAttribute="top" constant="8" id="a7C-wR-mLd"/>
+                            <constraint firstItem="MeG-OC-cdH" firstAttribute="centerY" secondItem="pE8-kr-I08" secondAttribute="centerY" id="eVE-cZ-3Ow"/>
                             <constraint firstAttribute="bottom" secondItem="pE8-kr-I08" secondAttribute="bottom" id="huo-Il-NTH"/>
                             <constraint firstItem="YvS-tS-0ec" firstAttribute="leading" secondItem="pE8-kr-I08" secondAttribute="leading" id="imP-6u-KUl"/>
                             <constraint firstItem="Itm-mP-po4" firstAttribute="leading" secondItem="pE8-kr-I08" secondAttribute="leading" id="nGw-0q-low"/>
@@ -80,6 +85,7 @@
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <size key="customSize" width="313" height="120"/>
             <connections>
+                <outlet property="activityIndicator" destination="MeG-OC-cdH" id="f9s-C5-5N7"/>
                 <outlet property="dimmingView" destination="YvS-tS-0ec" id="vDJ-nr-0ch"/>
                 <outlet property="thumbnailImageView" destination="pE8-kr-I08" id="no3-PB-ZKw"/>
                 <outlet property="titleLabel" destination="PHx-UY-ibe" id="N2y-fy-VdH"/>

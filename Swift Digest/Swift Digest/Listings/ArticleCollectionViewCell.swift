@@ -17,6 +17,7 @@ class ArticleCollectionViewCell: UICollectionViewCell {
 	static let reuseIdentifier = "ArticleCollectionViewCell"
 
 	@IBOutlet var thumbnailImageView: UIImageView!
+	@IBOutlet var activityIndicator: UIActivityIndicatorView!
 	@IBOutlet var dimmingView: UIView!
 	@IBOutlet var titleLabel: UILabel!
 	
@@ -42,14 +43,14 @@ class ArticleCollectionViewCell: UICollectionViewCell {
 		
 		titleLabel.text = article.title
 		
-		// TODO: spinner.stopAnimating()
+		activityIndicator.stopAnimating()
 		
 		if let image = article.image {
 			thumbnailImageView.image = image
 		} else if article.hasThumbnail() {
 			delegate?.cellArticleFetchingThumbnail(self, article: article)
 			
-			// TODO: spinner.startAnimating()
+			activityIndicator.startAnimating()
 			
 			article.fetchThumbnail()
 		} else {

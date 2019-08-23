@@ -42,7 +42,7 @@ class ListingsViewController: UIViewController {
 		articlesCollectionView.register(UINib(nibName: "\(ArticleCollectionViewCell.self)", bundle: nil), forCellWithReuseIdentifier: ArticleCollectionViewCell.reuseIdentifier)
 		
 		let refreshControl = UIRefreshControl()
-		refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+		refreshControl.attributedTitle = NSAttributedString(string: "Refreshing")
 		refreshControl.addTarget(self, action: #selector(pullToRefresh(_:)), for: .valueChanged)
 		articlesCollectionView.refreshControl = refreshControl
 	}
@@ -69,6 +69,8 @@ class ListingsViewController: UIViewController {
 			assertionFailure("Could not create listing URL!")
 			return
 		}
+		
+		articlesCollectionView.refreshControl?.beginRefreshing()
 		
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = "GET"
